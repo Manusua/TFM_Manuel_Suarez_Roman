@@ -447,27 +447,27 @@ def plot_comparison_vstat_using_cols(cols_ori, cols_inf, pos="lower right"):
 # Inferred vertices properties obtained by simulations.
 # ==================================================================================================
 def plot_comparison_vprop():
-  # Degrees.
+  """  # Degrees.
   ax = plot_comparison_vprop_using_cols([1, 2, 3])
   ax.set_xlabel(r"original degree $(k)$")
   ax.set_ylabel(r"inferred degree $(k)$")
   # Sum of the degree of neighbors.
   ax = plot_comparison_vprop_using_cols([4, 5, 6])
   ax.set_xlabel(r"original sum degree of neighbors")
-  ax.set_ylabel(r"inferred sum degree of neighbors")
+  ax.set_ylabel(r"inferred sum degree of neighbors")"""
   # Average degree of neighbors.
   ax = plot_comparison_vprop_using_cols([7, 8, 9])
   ax.set_xlabel(r"original average degree of neighbors $(k_\mathrm{nn})$")
   ax.set_ylabel(r"inferred average degree of neighbors $(k_\mathrm{nn})$")
-  # Sum of triangles to which each vertex participates.
+  """# Sum of triangles to which each vertex participates.
   ax = plot_comparison_vprop_using_cols([10, 11, 12])
   ax.set_xlabel(r"original number of triangles")
-  ax.set_ylabel(r"inferred number of triangles")
+  ax.set_ylabel(r"inferred number of triangles")"""
   # Clustering.
   ax = plot_comparison_vprop_using_cols([13, 14, 15])
   ax.set_xlabel(r"original clustering $(c)$")
   ax.set_ylabel(r"inferred clustering $(c)$")
-  # Degree distribution.
+  """# Degree distribution.
   ax = plot_comparison_vstat_using_cols([0, 1], [0, 1, 2], "upper right")
   ax.set_xscale("log")
   ax.set_yscale("log")
@@ -496,7 +496,7 @@ def plot_comparison_vprop():
   # ax.set_xlabel(r"degree $(k)$")
   ax.set_xlabel(r"degree")
   # ax.set_ylabel(r"clustering coefficient $[\bar{c}(k)]$"))
-  ax.set_ylabel(r"clustering coefficient")
+  ax.set_ylabel(r"clustering coefficient")"""
 
 
 
@@ -550,7 +550,7 @@ figure_title   = ('%r'%os.path.basename(name2)).replace('_', r'\_').strip("'")
 # Sets the figure objects.
 id_fig, nb_rows, nb_columns = 0, 2, 2
 if os.path.isfile(vprop_inferred):
-    id_fig, nb_rows, nb_columns = 0, 5, 3
+    id_fig, nb_rows, nb_columns = 0, 4, 1
 # id_fig, nb_rows, nb_columns = 0, 2, 3
 fig = plt.figure(figsize=(8 * nb_columns, 6 * nb_rows))
 
@@ -564,23 +564,23 @@ else:
 plot_hyperbolic_disk()
 # plot_hyperbolic_disk_slow()
 
-# Plots the angular density.
+"""# Plots the angular density.
 if os.path.isfile(theta_inferred):
     plot_theta_density()
 else:
-    plot_theta_density_using_raw_data()
+    plot_theta_density_using_raw_data()"""
 
 # Plots
 if os.path.isfile(vprop_inferred):
     plot_comparison_vprop()
 
 
-# Plots the comparison between the inferred and original angles.
+"""# Plots the comparison between the inferred and original angles.
 if os.path.isfile(coord_original):
-    plot_inferred_theta_vs_original_theta()
+    plot_inferred_theta_vs_original_theta()"""
 
 # Adds figure title.
-plt.suptitle(figure_title, y=0.99, va="top", ha="center")
+plt.suptitle("No al Tarifazo", y=0.99, va="top", ha="center")
 
 # Save to file.
 plt.tight_layout(rect=[-0.012, -0.012, 1.012, 0.988])

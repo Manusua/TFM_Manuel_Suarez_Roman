@@ -307,7 +307,35 @@ def thresh_normalization(G, threshold):
     
     return F
 
+def create_filtered_graph(G, thresh_filt):
+    """
+    Crea un nuevo grafo a partir de un grafo original, filtrando las aristas según un umbral de peso.
 
+    Dado un grafo `G`, esta función genera un nuevo grafo en el que solo se mantienen las aristas cuyo peso
+    es mayor o igual al umbral especificado. Las aristas con peso inferior al umbral son eliminadas.
+
+    Parámetros:
+    -----------
+    G : networkx.Graph
+        El grafo original del cual se va a filtrar.
+
+    thresh_filt : float
+        El umbral de peso. Solo se conservarán las aristas cuyo peso sea mayor o igual a este umbral.
+
+    Retorna:
+    --------
+    networkx.Graph
+        Un nuevo grafo que contiene solo las aristas con peso mayor o igual al umbral especificado.
+    """
+    H = nx.Graph()
+    # Añade nodos del grafo original al nuevo grafo
+    H.add_nodes_from(G.nodes())
+
+    # Añade aristas que cumplen con el umbral de peso
+    for u, v, data in G.edges(data=True):
+        if data['weight'] >= thresh_filt:
+            H.add_edge(u, v, **data)
+    return H
 ########################################################################
 #
 # OBTENCIÓN DE MÉTRICAS
@@ -651,7 +679,7 @@ def calc_clust(G, MAX_UMBRAL, measures_path, mode="h", read=True, write=True):
                 json.dump(dict_thres_avg_clust, f, indent=2)
     return dict_thres_avg_clust, dict_norm_int_deg
 
-def calc_self_sim(hora, MAX_UMBRAL, manifestacion, mode='h', graphs_folder="graphs/", measures_folder="measures/"):
+def calc_self_sim(hora, MAX_UMBRAL, manifestacion, mode='h', graphs_folder="graphs/", measures_folder="measures/", thresh_filter=5):
     """
     Carga el grafo correspondiente a una hora específica y calcula las métricas de autosimilitud para diferentes umbrales de grado.
 
@@ -675,6 +703,7 @@ def calc_self_sim(hora, MAX_UMBRAL, manifestacion, mode='h', graphs_folder="grap
         - 'h': redes con hashtags como nodos.
         - 'u': redes con usuarios como nodos.
         - 'b': redes bipartitas.
+        - 'f': redes filtradas.
 
     graphs_folder : str, opcional, por defecto "graphs/"
         Ruta a la carpeta que contiene los archivos GEXF de los grafos.
@@ -702,6 +731,8 @@ def calc_self_sim(hora, MAX_UMBRAL, manifestacion, mode='h', graphs_folder="grap
         path_graph = "nodes_user/"
     elif mode == "b":
         path_graph = "bipartite/"
+    elif mode == "f":
+        path_graph = "filtered/" + str(thresh_filter) + '/'
     G = nx.read_gexf(graphs_folder + path_graph  + manifestacion + hora + ".gexf")
     path_measures_hour = measures_folder + manifestacion
     if not os.path.exists(path_measures_hour):
@@ -859,7 +890,7 @@ def calc_ccdf_points(arr_cdf_points):
         arr_ccdf_points.append((deg_cum[0][:-1], ccdf[:-1]))   
     return arr_ccdf_points
 
-def calc_degree_distribution(hour, manifestacion, graphs_folder="graphs/", mode="h", measures_folder="measures/", G=None, arr_kt=[0], exp=False, read=True, write=True, norm=False):
+def calc_degree_distribution(hour, manifestacion, graphs_folder="graphs/", mode="h", measures_folder="measures/", G=None, arr_kt=[0], exp=False, read=True, write=True, norm=False, thresh_filt=5):
     """
     Calcula la distribución de grados de los nodos en un grafo, así como la función de distribución de probabilidad (PDF), la función de distribución acumulativa (CDF) y la función de distribución acumulativa complementaria (CCDF) de los grados de los nodos.
     Opcionalmente, ajusta una ley de potencia a la distribución de grados y calcula el exponente si se solicita.
@@ -918,7 +949,9 @@ def calc_degree_distribution(hour, manifestacion, graphs_folder="graphs/", mode=
         path_graph = "nodes_user/"
     elif mode == "b":
         path_graph = "bipartite/"
-
+    elif mode == "f":
+        path_graph = "filtered/" + str(thresh_filt) + '/'
+    
     # Se carga el grafo inicial
     G = nx.read_gexf(graphs_folder + path_graph + manifestacion + hour + '.gexf')
         
