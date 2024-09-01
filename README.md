@@ -21,9 +21,9 @@ El repositorio se encuentra organizado de la siguiente forma:
 * ```measures/```: directorio que contiene las diferentes métricas calculadas para cada grafo, para evitar tener que recalcularlas. Está estructurado de la siguiente forma:
         
         ├── measures: archivos con información general de anidamiento y modularidad para cada manifestación y estrategia de formación de redes (hashtag, usuarios y bipartitas)
-        │    ├── 9n: archivos, por horas, con información del coeficiente medio de clusterización por K_t, coeficiente de clusterización medio de nodos con el mismo internal degree para cada K_t y distribución de grados de la manifestación 9 de noviembre.
+        │    ├── 9n: archivos, por horas, con información del coeficiente medio de clusterización por K_t (avg_clust), coeficiente de clusterización medio de nodos con el mismo internal degree para cada K_t (int_deg) y distribución de grados de la manifestación 9 de noviembre (des_kt) para cada hora y cada estrategia de creación de grafos  (h, hashtags como nodos, u, usuarios como nodos, b, redes bipartitas o f, grafo original filtrando por umbral de peso).
         │    ├── nat: archivos, por horas, con información del coeficiente medio de clusterización por K_t, coeficiente de clusterización medio de nodos con el mismo internal degree para cada K_t y distribución de grados de la manifestación No al Tarifazo.
-        |    │   
+        |    ├── MANIFESTACION_MODE.json: archivo de la MANIFESTACION (nat o 9n) para cada estrategia de generación (h, hashtags como nodos, u, usuarios como nodos, b, redes bipartitas)
 * ```plots/```: contiene los diferentes gráficos generados en la ejecución del notebook principal.
 * ```graphs/```: directorio con los diferentes grafos generados en formato ```.gexf```. Está estructurado de la siguiente forma:
         
