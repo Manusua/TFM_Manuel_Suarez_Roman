@@ -371,7 +371,6 @@ def calc_self_sim(hora, MAX_UMBRAL, manifestacion, mode='h', graphs_folder="grap
 # Devuelve un array con la información de los exponentes hallados para cada elemento
 def get_exp(arr_points, name_graph, measures_folder="measures/"):
     
-    measures_path = measures_folder + "degrees/" 
     # Se ordenan los puntos de menor a mayor quitando los 0s (producen error al calcular el exponente)
     points_aux = np.sort(arr_points)
     points_aux = points_aux[points_aux != 0]
@@ -379,6 +378,7 @@ def get_exp(arr_points, name_graph, measures_folder="measures/"):
 
     """    # Se escriben los grados de los nodos en un archivo.
     # El formato es este para poder emplear d-mercator
+    measures_path = measures_folder + "degrees/" 
     path = measures_path + name_graph + '.txt'
     with open(path, "w") as f:
         for point in points_aux:
