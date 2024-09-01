@@ -315,7 +315,6 @@ def calc_clust(G, MAX_UMBRAL, measures_path, mode="h", read=True, write=True):
 
     # Se calculan las sucesivas métricas para cada umbral de grado y se escriben
     for threshold in tqdm(range(MAX_UMBRAL)):
-
         flag_int_deg = threshold in dict_norm_int_deg.keys()
         flag_avg_clust = threshold in dict_thres_avg_clust.keys()
         # Si ambas son true podemos saltar el paso (ya está calculado previamente)
@@ -351,13 +350,13 @@ def calc_clust(G, MAX_UMBRAL, measures_path, mode="h", read=True, write=True):
 # Carga el grafo demandado por parámetros y devuelve los diccionarios con las métricas de autosimilitud
 def calc_self_sim(hora, MAX_UMBRAL, manifestacion, mode='h', graphs_folder="graphs/", measures_folder="measures/"):
     if mode == "h":
-        path_graph = "nodes_hashtag"
+        path_graph = "nodes_hashtag/"
     elif mode == "u":
-        path_graph = "nodes_user"
+        path_graph = "nodes_user/"
     elif mode == "b":
-        path_graph = "bipartite"
-    G = nx.read_gexf(graphs_folder + path_graph + '/' + manifestacion + hora + ".gexf")
-    path_measures_hour = measures_folder + manifestacion + '/'
+        path_graph = "bipartite/"
+    G = nx.read_gexf(graphs_folder + path_graph  + manifestacion + hora + ".gexf")
+    path_measures_hour = measures_folder + manifestacion
     if not os.path.exists(path_measures_hour):
         os.makedirs(path_measures_hour)
     return calc_clust(G, MAX_UMBRAL, path_measures_hour + hora, mode=mode)
@@ -378,12 +377,12 @@ def get_exp(arr_points, name_graph, measures_folder="measures/"):
     points_aux = points_aux[points_aux != 0]
     points_aux = points_aux[::-1]
 
-    # Se escriben los grados de los nodos en un archivo.
+    """    # Se escriben los grados de los nodos en un archivo.
     # El formato es este para poder emplear d-mercator
     path = measures_path + name_graph + '.txt'
     with open(path, "w") as f:
         for point in points_aux:
-            f.writelines(str(point) + '\n')
+            f.writelines(str(point) + '\n')"""
 
     results = powerlaw.Fit(points_aux)
         
@@ -421,6 +420,77 @@ def calc_ccdf_points(arr_cdf_points):
         # complementaria 0 o muy cercana a 0, hace que el grafico quede deformado y no es util
         arr_ccdf_points.append((deg_cum[0][:-1], ccdf[:-1]))   
     return arr_ccdf_points
+
+# Dado un grafo, calcula la distgribución de grados de sus nodos, así como la PDF, CDF y CCDF de la probabilidad de los grados. Además también calcula el exponente del ajuste
+# de la ley de potencia a la distribución si exp=True
+def calc_degree_distribution(hour, manifestacion, graphs_folder="graphs/", mode="h", measures_folder="measures/", G=None, arr_kt=[0], exp=False, read=True, write=True):
+    if mode == "h":
+        path_graph = "nodes_hashtag/"
+    elif mode == "u":
+        path_graph = "nodes_user/"
+    elif mode == "b":
+        path_graph = "bipartite/"
+
+    # Se carga el grafo inicial
+    G = nx.read_gexf(graphs_folder + path_graph + manifestacion + hour + '.gexf')
+        
+    arr_points = []
+    dict_points = {}
+    measures_path = measures_folder + manifestacion + hour + '_' + mode + '_degs_kt.json'
+    if read:
+        # En los archivos se guardan los grados de los nodos de cada grafo dependiente de kt en bruto, sin sufrir procesos de normalización
+        if os.path.exists(measures_path):
+            try:
+                with open(measures_path, 'r') as f:
+                    dict_points = json.load(f)
+                dict_points = convert_keys_to_float(dict_points, tipo="int")
+            except json.JSONDecodeError:
+                pass
+    
+    # Si no recibe un arr_kt como parametro, se interpreta que es la red original
+    for kt in tqdm(arr_kt):
+        if not kt in dict_points.keys():
+            F = thresh_normalization(G, kt)
+            if F != -1:
+                points_kt = np.sort(np.array(list(dict(F.degree()).values())).astype(float))
+                dict_points[kt] = list(points_kt)
+    
+        else:
+            points_kt = dict_points[kt]
+        points_kt = np.array(points_kt) / np.mean(points_kt)
+
+        arr_points.append(points_kt)
+    
+    # El exponente solo se va a calcular cuando se reciba un valor de kt
+    plfit = None
+    if exp:
+        # Para calcular el exponente no hay que normalizar
+        plfit = get_exp([points_kt*np.mean(points_kt)], hour)
+
+    # Puntos de la PDF
+    arr_deg_prob = []
+    for points in arr_points:
+        degrees, counts = np.unique(points, return_counts=True)
+        probs = counts / len(points)
+        arr_deg_prob.append((degrees, probs))
+    
+    # Puntos de la CDF
+    arr_deg_cum = []
+    for deg_prob in arr_deg_prob:
+        cum_freq = np.cumsum(deg_prob[1])
+        cdf = cum_freq/cum_freq[-1]
+        arr_deg_cum.append((deg_prob[0], cdf))
+
+    # Puntos de la CCDF
+    arr_deg_comp_cum = []
+    for deg_cum in arr_deg_cum:
+        ccdf = 1 - deg_cum[1]
+        arr_deg_comp_cum.append((deg_cum[0], ccdf))
+
+    if write:
+        with open(measures_path, "w") as f:
+            json.dump(dict_points, f, indent=2)
+    return plfit, arr_deg_prob, arr_deg_comp_cum
 
 ########################################################################
 #
