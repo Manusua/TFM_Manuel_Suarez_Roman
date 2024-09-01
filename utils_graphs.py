@@ -369,7 +369,7 @@ def calc_self_sim(hora, MAX_UMBRAL, manifestacion, mode='h', graphs_folder="grap
 
 # Recibe como parámetros de array de puntos, correpsondiente con los grados de los nodos de un grafo.
 # Devuelve un array con la información de los exponentes hallados para cada elemento
-def get_exp(arr_points, name_graph, measures_folder="measures/"):
+def get_exp(arr_points):
     
     # Se ordenan los puntos de menor a mayor quitando los 0s (producen error al calcular el exponente)
     points_aux = np.sort(arr_points)
@@ -423,7 +423,7 @@ def calc_ccdf_points(arr_cdf_points):
 
 # Dado un grafo, calcula la distgribución de grados de sus nodos, así como la PDF, CDF y CCDF de la probabilidad de los grados. Además también calcula el exponente del ajuste
 # de la ley de potencia a la distribución si exp=True
-def calc_degree_distribution(hour, manifestacion, graphs_folder="graphs/", mode="h", measures_folder="measures/", G=None, arr_kt=[0], exp=False, read=True, write=True):
+def calc_degree_distribution(hour, manifestacion, graphs_folder="graphs/", mode="h", measures_folder="measures/", G=None, arr_kt=[0], exp=False, read=True, write=True, norm=False):
     if mode == "h":
         path_graph = "nodes_hashtag/"
     elif mode == "u":
@@ -457,15 +457,15 @@ def calc_degree_distribution(hour, manifestacion, graphs_folder="graphs/", mode=
     
         else:
             points_kt = dict_points[kt]
-        points_kt = np.array(points_kt) / np.mean(points_kt)
+        if norm:
+            points_kt = np.array(points_kt) / np.mean(points_kt)
 
         arr_points.append(points_kt)
-    
     # El exponente solo se va a calcular cuando se reciba un valor de kt
     plfit = None
     if exp:
         # Para calcular el exponente no hay que normalizar
-        plfit = get_exp([points_kt*np.mean(points_kt)], hour)
+        plfit = get_exp([dict_points[arr_kt[0]]])
 
     # Puntos de la PDF
     arr_deg_prob = []
