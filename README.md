@@ -5,7 +5,6 @@ El repositorio se encuentra organizado de la siguiente forma:
 * ```Self similarity in graphs.ipynb```: notebook principal. Contiene todo el flujo de ejecuciones necesario para llegar a los resultados presentados en la memoria del Trabajo de Fin de Máster. También se presenta en formato '.pdf'.
 * ```utils_graph.py```: funciones auxiliares del notebook de creación de grafo, obtención de métricas...
 * ```nestedness_calculator.py```: implementa el algoritmo NODF para el calculo del coeficiente de anidamiento. Creado por  Mika Straka.
-* ```requirements.txt```: archivo con las librerías empleadas para la ejecución de los archivos de código.
 * ```d-mercator/```: directorio que contiene todos los archivos necesarios para ejecutar la herramienta de d-mercator en las redes.
         
         ├── d-mercator
@@ -40,4 +39,5 @@ El repositorio se encuentra organizado de la siguiente forma:
         │    ├── nodes_user: grafos con usuarios como nodos
         |    │   ├── 9n: grafos de 9 de noviembre
         |    │   ├── nat: grafos de No al Tarifazo
-    
+
+* ```boxes/```: directorio con algoritmos de box covering. Desarrollado por [Peter T Kovacs](https://github.com/PeterTKovacs/boxes)

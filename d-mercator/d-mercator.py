@@ -64,6 +64,7 @@ def plot_connection_probability():
             frameon=False, numpoints=1,
             loc="lower left", ncol=1)
 
+  ax.annotate('A',xycoords='axes fraction', xy=(0.95, 0.05))
 
 
 
@@ -154,6 +155,7 @@ def plot_connection_probability_using_raw_data():
             frameon=False, numpoints=1,
             loc="lower left", ncol=1)
 
+  ax.annotate('A', xy=(ax.get_xlim()[1]*0.8, 0.0001))
 
 
 
@@ -200,7 +202,7 @@ def plot_hyperbolic_disk(nb_seg=100):
   # Removes labels.
   ax.set_rticks([])
   ax.set_xticklabels("")
-
+  ax.annotate('B', xycoords='axes fraction', xy=(0.95, 0.05))
 
 
 
@@ -457,6 +459,8 @@ def plot_comparison_vprop():
   ax.set_ylabel(r"inferred sum degree of neighbors")"""
   # Average degree of neighbors.
   ax = plot_comparison_vprop_using_cols([7, 8, 9])
+
+  ax.annotate('C', xycoords='axes fraction', xy=(0.95, 0.05))
   ax.set_xlabel(r"original average degree of neighbors $(k_\mathrm{nn})$")
   ax.set_ylabel(r"inferred average degree of neighbors $(k_\mathrm{nn})$")
   """# Sum of triangles to which each vertex participates.
@@ -467,6 +471,8 @@ def plot_comparison_vprop():
   ax = plot_comparison_vprop_using_cols([13, 14, 15])
   ax.set_xlabel(r"original clustering $(c)$")
   ax.set_ylabel(r"inferred clustering $(c)$")
+  ax.annotate('D', xycoords='axes fraction', xy=(0.95, 0.05))
+
   """# Degree distribution.
   ax = plot_comparison_vstat_using_cols([0, 1], [0, 1, 2], "upper right")
   ax.set_xscale("log")
@@ -520,6 +526,18 @@ if len(sys.argv) > 3:
 else:
     v = True
 
+
+# Adds figure title.
+if '9n' in path:
+  print('9n')
+  titulo = "9n"
+elif 'nat' in path:
+  print('NAT')
+  titulo = "No al Tarifazo"
+else:
+  print("Ruta no identificada como nat o 9n")
+  exit()
+
 dmercator.embed(os.getcwd() + '/' + path, dimension=dim, validation_mode=v)   
 
 # Imprime un pdf con el resumen de la información
@@ -553,6 +571,7 @@ if os.path.isfile(vprop_inferred):
     id_fig, nb_rows, nb_columns = 0, 4, 1
 # id_fig, nb_rows, nb_columns = 0, 2, 3
 fig = plt.figure(figsize=(8 * nb_columns, 6 * nb_rows))
+plt.suptitle(titulo, y=0.99, va="top", ha="center")
 
 # Plots the probablity of connection.
 if os.path.isfile(pconn_inferred):
@@ -579,8 +598,7 @@ if os.path.isfile(vprop_inferred):
 if os.path.isfile(coord_original):
     plot_inferred_theta_vs_original_theta()"""
 
-# Adds figure title.
-plt.suptitle("No al Tarifazo", y=0.99, va="top", ha="center")
+
 
 # Save to file.
 plt.tight_layout(rect=[-0.012, -0.012, 1.012, 0.988])
